@@ -12,6 +12,9 @@ from rest_framework.permissions import IsAuthenticated
 
 class Login(APIView):
     print('Login')
+    
+    def get(self, request):
+        return JsonResponse({'message': 'this is the login page'}, safe=False)
 
     def post(self, request):
         return JsonResponse({'message': 'this is the login page'}, safe=False)
