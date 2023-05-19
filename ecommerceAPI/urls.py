@@ -10,7 +10,8 @@ import os
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', HomeView),
-    path('api/', include('core.urls', namespace='core'))
+    path('api/', include('core.urls', namespace='core')),
+    path('api-auth/', include('authentication.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # Serve the favicon - Keep for later

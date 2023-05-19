@@ -4,6 +4,8 @@ from rest_framework.views import APIView
 import json
 from ..serializers import ProductSerializer
 from django.http import JsonResponse
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 
@@ -29,6 +31,8 @@ class ProductDetail(APIView):
         return JsonResponse(serializer.data, safe=False)
 
 class ProductCreate(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     model = Product
 
     def post(self, request):
@@ -39,7 +43,17 @@ class ProductCreate(APIView):
         return JsonResponse(serializer.errors, safe=False)
     
 class ProductUpdate(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     model = Product
+
+    def patch(self, request, pk):
+        product = Product.objects.get(pk=pk)
+        serializer = ProductSerializer(product, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, safe=False)
+        return JsonResponse(serializer.errors, safe=False)
 
     def put(self, request, pk):
         product = Product.objects.get(pk=pk)
@@ -50,6 +64,8 @@ class ProductUpdate(APIView):
         return JsonResponse(serializer.errors, safe=False, status=400)
     
 class ProductDelete(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     model = Product
 
     def delete(self, request, pk):
@@ -61,6 +77,8 @@ class ProductDelete(APIView):
         return JsonResponse({'message': 'Product was deleted successfully!'}, status=204)
     
 class ProductUpdateStock(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     model = Product
 
     def post(self, request, pk):
@@ -79,6 +97,8 @@ class ProductUpdateStock(APIView):
         return JsonResponse({'message': f"Stock was updated successfully! new stock: {product.stock}"}, status=200)
     
 class CartBuy(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     model = Product
 
     def post(self, request):
