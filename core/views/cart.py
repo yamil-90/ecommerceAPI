@@ -3,6 +3,15 @@ from rest_framework.views import APIView
 import json
 from django.http import JsonResponse
 
+def checkStock(cart):
+    for item in cart:
+        product = Product.objects.get(pk=item['id'])
+        if product.stock < item['quantity']:
+            return JsonResponse({
+                'message': f'The product "{product.name}" is out of stock, delete it from cart and try again',
+                'product': product.name
+            }, status=400)
+
 
 class CartBuy(APIView):
     model = Product
@@ -10,14 +19,18 @@ class CartBuy(APIView):
     def post(self, request):
         body = request.body.decode('utf-8')
         cart = json.loads(body)
-        cart = cart['items']
+        cart = cart['cart']
+        checkStock(cart)
+        total = 0
         for item in cart:
             product = Product.objects.get(pk=item['id'])
+            total += product.price * item['quantity']
             product.stock -= item['quantity']
-            if product.stock < 0:
-                return JsonResponse({'message': 'The product is out of stock'}, status=400)
             product.save()
 
-        return JsonResponse({'message': 'purchase was successfull'}, safe=False)
+        return JsonResponse({
+            'message': 'purchase was successfull',
+            'total': total
+            }, safe=False)
     
     

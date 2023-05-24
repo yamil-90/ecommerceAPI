@@ -6,6 +6,8 @@ from ..serializers import ProductSerializer
 from django.http import JsonResponse
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+import sys
+from rest_framework.parsers import MultiPartParser
 
 # Create your views here.
 
@@ -31,16 +33,18 @@ class ProductDetail(APIView):
         return JsonResponse(serializer.data, safe=False)
 
 class ProductCreate(APIView):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    # authentication_classes = [TokenAuthentication]
+    # permission_classes = [IsAuthenticated]
     model = Product
 
     def post(self, request):
-        serializer = ProductSerializer(data=request.data)
+        print('idduno')
+        data = request.data
+        serializer = ProductSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data, safe=False)
-        return JsonResponse(serializer.errors, safe=False)
+            return JsonResponse({'message': 'product created'}, safe=False)
+        return JsonResponse(serializer.errors, safe=False, status=400)
     
 class ProductUpdate(APIView):
     authentication_classes = [TokenAuthentication]

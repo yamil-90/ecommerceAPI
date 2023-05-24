@@ -4,6 +4,7 @@
 *.pyc
 __pycache__/
 media/assets/
+media/media
 staticfiles/
 *.db
 *.sqlite3
